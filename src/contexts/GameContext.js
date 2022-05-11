@@ -10,6 +10,13 @@ import PropTypes from "prop-types";
 
 export const GameContext = createContext(null);
 
+const INITIAL_STATE = {
+  squares: Array(9).fill(null),
+  isXNext: true,
+  whoIsWinner: null,
+  history: [],
+};
+
 function reducer(state, action) {
   switch (action.type) {
     case "UPDATE_SQUARES": {
@@ -38,17 +45,12 @@ function reducer(state, action) {
         whoIsWinner: action.payload,
       };
     }
+    case "RESET":
+      return INITIAL_STATE;
     default:
       return state;
   }
 }
-
-const INITIAL_STATE = {
-  squares: Array(9).fill(null),
-  isXNext: true,
-  whoIsWinner: null,
-  history: [],
-};
 
 export function GameContextProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
