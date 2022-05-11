@@ -45,6 +45,12 @@ function reducer(state, action) {
         whoIsWinner: action.payload,
       };
     }
+    case "UPDATE_HISTORY": {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    }
     case "RESET":
       return INITIAL_STATE;
     default:
@@ -54,23 +60,6 @@ function reducer(state, action) {
 
 export function GameContextProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-
-  // function resetGame() {
-  //   setSquares(Array(9).fill(null));
-  //   setIsXNext(true);
-  //   setWhoIsWinner(null);
-  //   setHistory([]);
-  // }
-
-  // function backToStep(stepIndex) {
-  //   const newHistory = [...history];
-  //   newHistory.splice(stepIndex, Number.MAX_SAFE_INTEGER);
-  //   setHistory(newHistory);
-
-  //   setSquares(history[stepIndex].squares);
-  //   setIsXNext(history[stepIndex].isXNext);
-  //   setWhoIsWinner(history[stepIndex].whoIsWinner);
-  // }
 
   return (
     <GameContext.Provider value={{ state, dispatch }}>
