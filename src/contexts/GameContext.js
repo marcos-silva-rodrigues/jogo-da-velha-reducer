@@ -1,74 +1,93 @@
-import React, { createContext, useEffect, useMemo, useState } from "react";
+/* eslint-disable react/jsx-no-constructed-context-values */
+import React, {
+  createContext,
+  // useEffect,
+  useReducer,
+  // useState,
+} from "react";
 import PropTypes from "prop-types";
-import calculateWinner from "../utils/calculateWinner";
+// import calculateWinner from "../utils/calculateWinner";
 
 export const GameContext = createContext(null);
 
+function reducer(state, action) {
+  switch (action.type) {
+    case "UPDATE_SQUARES": {
+      console.log("actions");
+      const { squares, history, isXNext, whoIsWinner } = state;
+      const newState = { ...state };
+
+      const newHistory = [
+        ...history,
+        {
+          squares,
+          isXNext,
+          whoIsWinner,
+        },
+      ];
+
+      newState.squares = action.payload;
+      newState.isXNext = !isXNext;
+      newState.whoIsWinner = whoIsWinner;
+      newState.history = newHistory;
+
+      return newState;
+    }
+    default:
+      return state;
+  }
+}
+
+const INITIAL_STATE = {
+  squares: Array(9).fill(null),
+  isXNext: true,
+  whoIsWinner: null,
+  history: [],
+};
+
 export function GameContextProvider({ children }) {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [isXNext, setIsXNext] = useState(true);
-  const [whoIsWinner, setWhoIsWinner] = useState(null);
-  const [history, setHistory] = useState([]);
+  // const [squares, setSquares] = useState(Array(9).fill(null));
+  // const [isXNext, setIsXNext] = useState(true);
+  // const [whoIsWinner, setWhoIsWinner] = useState(null);
+  // const [history, setHistory] = useState([]);
 
-  useEffect(() => {
-    const winner = calculateWinner(squares);
-    if (winner) setWhoIsWinner(winner);
-  }, [squares]);
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
-  function resetGame() {
-    setSquares(Array(9).fill(null));
-    setIsXNext(true);
-    setWhoIsWinner(null);
-    setHistory([]);
-  }
+  // useEffect(() => {
+  //   const winner = calculateWinner(squares);
+  //   if (winner) setWhoIsWinner(winner);
+  // }, [squares]);
 
-  function backToStep(stepIndex) {
-    const newHistory = [...history];
-    newHistory.splice(stepIndex, Number.MAX_SAFE_INTEGER);
-    setHistory(newHistory);
+  // function resetGame() {
+  //   setSquares(Array(9).fill(null));
+  //   setIsXNext(true);
+  //   setWhoIsWinner(null);
+  //   setHistory([]);
+  // }
 
-    setSquares(history[stepIndex].squares);
-    setIsXNext(history[stepIndex].isXNext);
-    setWhoIsWinner(history[stepIndex].whoIsWinner);
-  }
+  // function backToStep(stepIndex) {
+  //   const newHistory = [...history];
+  //   newHistory.splice(stepIndex, Number.MAX_SAFE_INTEGER);
+  //   setHistory(newHistory);
 
-  function handlePlayerAction(positionSquare) {
-    if (squares[positionSquare]) return;
-    if (whoIsWinner) return;
+  //   setSquares(history[stepIndex].squares);
+  //   setIsXNext(history[stepIndex].isXNext);
+  //   setWhoIsWinner(history[stepIndex].whoIsWinner);
+  // }
 
-    const newSquares = [...squares];
-    newSquares[positionSquare] = isXNext ? "X" : "O";
-    setSquares(newSquares);
-    setIsXNext(!isXNext);
+  // const values = useMemo(
+  //   () => ({
+  //     state,
+  //     dispatch,
+  //   }),
+  //   [state]
+  // );
 
-    setHistory([
-      ...history,
-      {
-        squares: [...squares],
-        isXNext,
-        whoIsWinner,
-      },
-    ]);
-  }
-
-  const states = useMemo(
-    () => ({
-      squares,
-      setSquares,
-      isXNext,
-      setIsXNext,
-      whoIsWinner,
-      setWhoIsWinner,
-      history,
-      setHistory,
-      resetGame,
-      backToStep,
-      handlePlayerAction,
-    }),
-    [squares, isXNext, whoIsWinner, history]
+  return (
+    <GameContext.Provider value={{ state, dispatch }}>
+      {children}
+    </GameContext.Provider>
   );
-
-  return <GameContext.Provider value={states}>{children}</GameContext.Provider>;
 }
 
 GameContextProvider.propTypes = {
