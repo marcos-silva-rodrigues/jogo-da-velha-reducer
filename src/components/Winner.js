@@ -2,7 +2,9 @@ import React, { useContext } from "react";
 import { GameContext } from "../contexts/GameContext";
 
 export default function Winner() {
-  const { whoIsWinner } = useContext(GameContext);
+  const {
+    state: { whoIsWinner },
+  } = useContext(GameContext);
 
   if (!whoIsWinner) return null;
 
