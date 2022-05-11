@@ -13,7 +13,6 @@ export const GameContext = createContext(null);
 function reducer(state, action) {
   switch (action.type) {
     case "UPDATE_SQUARES": {
-      console.log("actions");
       const { squares, history, isXNext, whoIsWinner } = state;
       const newState = { ...state };
 
@@ -33,6 +32,12 @@ function reducer(state, action) {
 
       return newState;
     }
+    case "UPDATE_WINNER": {
+      return {
+        ...state,
+        whoIsWinner: action.payload,
+      };
+    }
     default:
       return state;
   }
@@ -46,17 +51,7 @@ const INITIAL_STATE = {
 };
 
 export function GameContextProvider({ children }) {
-  // const [squares, setSquares] = useState(Array(9).fill(null));
-  // const [isXNext, setIsXNext] = useState(true);
-  // const [whoIsWinner, setWhoIsWinner] = useState(null);
-  // const [history, setHistory] = useState([]);
-
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-
-  // useEffect(() => {
-  //   const winner = calculateWinner(squares);
-  //   if (winner) setWhoIsWinner(winner);
-  // }, [squares]);
 
   // function resetGame() {
   //   setSquares(Array(9).fill(null));
@@ -74,14 +69,6 @@ export function GameContextProvider({ children }) {
   //   setIsXNext(history[stepIndex].isXNext);
   //   setWhoIsWinner(history[stepIndex].whoIsWinner);
   // }
-
-  // const values = useMemo(
-  //   () => ({
-  //     state,
-  //     dispatch,
-  //   }),
-  //   [state]
-  // );
 
   return (
     <GameContext.Provider value={{ state, dispatch }}>
